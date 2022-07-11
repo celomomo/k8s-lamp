@@ -1,0 +1,57 @@
+###Apache
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-d
+spec:
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+          containers:
+          - image: celomomo/lamp-stack:apache-php
+            name: apache-c
+            env:
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-env
+                  key: mysql_host
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-env
+                  key: mysql_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            ports:
+            - name: apache-p
+              containerPort: 80
+            volumeMounts:
+            - name: apache-storage
+              mountPath: /var/www/html/
+          volumes:
+          - name: apache-storage
+            persistentVolumeClaim:
+              claimName: apache-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-service
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080
+  selector:
+    app: apache

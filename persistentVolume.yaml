@@ -1,0 +1,63 @@
+###PV
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    name: mysql-pv
+spec:
+  storageClassName: mysql-pv
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/data/nfs/mysql-data/"
+    server: "192.168.112.110"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: apache-pv
+  labels:
+    name: apache-pv
+spec:
+  storageClassName: apache-pv
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: "/data/nfs/html"
+    server: "192.168.112.110"
+###PVC
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  labels:
+    name: mysql-pvc
+spec:
+  storageClassName: mysql-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: apache-pvc
+  labels:
+    name: apache-pvc
+spec:
+  storageClassName: apache-pv
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
